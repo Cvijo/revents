@@ -14,3 +14,9 @@ const mapStateToProps = (state) => ({
   data: state.test.data
 })
 export default connect(mapStateToProps)(TestComponent)
+
+
+
+
+
+
