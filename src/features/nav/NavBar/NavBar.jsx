@@ -24,7 +24,7 @@ class NavBar extends Component {
                     <Menu.Item as={Link} to='/' header>
                         <img src="/assets/logo.png" alt="logo" />
                         Re-vents
-              </Menu.Item>
+                    </Menu.Item>
                     <Menu.Item as={NavLink} to='/events' name="Events" />
                     {this.state.isAuth &&
                         <Menu.Item as={NavLink} to='/people' name="People" />}
@@ -34,6 +34,7 @@ class NavBar extends Component {
                         </Menu.Item>}
                     {this.state.isAuth && <SignedInMenu signOut={this.handleSignOut} />}
                     {!this.state.isAuth && <SignedOutMenu signIn={this.handleSignIn} />}
+                    <Menu.Item as={NavLink} to='/test' name="Test area" />
                 </Container>
             </Menu>
         )

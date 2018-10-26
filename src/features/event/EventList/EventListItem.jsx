@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
-import { Segment, Icon, List, Item, Button } from 'semantic-ui-react'
+import { Segment, Icon, Item, Button, List } from 'semantic-ui-react';
 import EventListAttendee from '../EventList/EventListAttendee';
 
 class EventListItem extends Component {
 
+
   render()
+
   {
     const { event, onEventOpen, deleteEvent } = this.props;
     return (
