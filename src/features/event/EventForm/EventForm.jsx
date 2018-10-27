@@ -1,3 +1,4 @@
+/*global google*/
 import React, { Component } from 'react'
 import { Segment, Form, Button, Grid, Header } from 'semantic-ui-react';
 import { connect } from 'react-redux';
@@ -10,6 +11,10 @@ import SelectInput from '../../../app/common/form/SelectInput';
 import DateInput from '../../../app/common/form/DateInput';
 import { combineValidators, isRequired, composeValidators, hasLengthGreaterThan } from 'revalidate';
 import moment from 'moment';
+import PlaceInput from '../../../app/common/form/PlaceInput';
+import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import Script from 'react-load-script';
+
 
 const category = [
 	{ key: 'drinks', text: 'Drinks', value: 'drinks' },
@@ -33,10 +38,39 @@ const validate = combineValidators({
 })
 
 class EventForm extends Component {
+	state = {
+		cityLatLng: {},
+		venueLatLng: {},
+		scriptLoaded: false
+	}
+
+	handleCitySelect = (selectedCity) => {
+		geocodeByAddress(selectedCity)
+			.then(results => getLatLng(results[0]))
+			.then(latLng => {
+				this.setState({ cityLatLng: latLng })
+			})
+			.then(() => {
+				this.props.change('city', selectedCity)  //mouse click fixed for places .. mouse didnt work on click
+			})
+	}
+
+	handleVenueSelect = (selectedVenue) => {
+		geocodeByAddress(selectedVenue)
+			.then(results => getLatLng(results[0]))
+			.then(latLng => {
+				this.setState({ venueLatLng: latLng })
+			})
+			.then(() => {
+				this.props.change('venue', selectedVenue)  //mouse click fixed for places .. mouse didnt work on click
+			})
+	}
 
 	onFormSubmit = (values) => {
 
 		values.date = moment(values.date).format();
+		values.venueLatLng = this.state.venueLatLng;
+		console.log(values);
 		if (this.props.initialValues.id) {
 			this.props.updateEvent(values);
 			this.props.history.goBack();
@@ -51,11 +85,16 @@ class EventForm extends Component {
 			this.props.history.push('/events');
 		}
 	}
+	handleSriptLoaded = () => this.setState({ scriptLoaded: true });
 
 	render() {
 		const { invalid, submitting, pristine } = this.props
 		return (
 			<Grid>
+				<Script
+					url='https://maps.googleapis.com/maps/api/js?key=AIzaSyA3cNoTEIEkKWfEMMfQhCH0pHKUO-fUv4w&libraries=places'
+					onLoad={this.handleSriptLoaded}
+				/>
 				<Grid.Column width={10}>
 					<Segment>
 						<Form onSubmit={this.props.handleSubmit(this.onFormSubmit)}>
@@ -64,8 +103,10 @@ class EventForm extends Component {
 							<Field name='category' type='text' component={SelectInput} options={category} placeholder='What is your event about' />
 							<Field name='description' type='text' rows={3} component={TextArea} placeholder='Tell us about your event' />
 							<Header sub color='teal' content='Event location details' />
-							<Field name='city' type='text' component={TextInput} placeholder='Event city' />
-							<Field name='venue' type='text' component={TextInput} placeholder='Enter venue' />
+							<Field name='city' type='text' component={PlaceInput} options={{ types: ['(cities)'] }} onSelect={this.handleCitySelect} placeholder='Event city' />
+							{this.state.scriptLoaded &&
+								<Field name='venue' type='text' component={PlaceInput} options={{ location: new google.maps.LatLng(this.state.cityLatLng), radius: 1000, types: ['establishment'] }} onSelect={this.handleVenueSelect} placeholder='Enter venue' />
+							}
 							<Field name='date' type='text' component={DateInput} dateFormat='DD.MM.YYYY HH:mm' timeFormat='HH:mm' showTimeSelect placeholder='Date and Time of event' />
 							<Button disabled={invalid || submitting || pristine} positive type="submit">
 								Submit
