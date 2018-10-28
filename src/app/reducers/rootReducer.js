@@ -6,6 +6,7 @@ import eventReducer from '../../features/event/eventReducer';
 import modalsReducer from '../../features/modals/modalsReducer';
 import authReducer from '../../features/auth/authReducer';
 import asnycReducer from '../../features/async/asnycReducer';
+import {reducer as toastrReducer} from 'react-redux-toastr';
 
 const rootReducer = combineReducers( {
     test:testReducer,
@@ -13,7 +14,8 @@ const rootReducer = combineReducers( {
     form: FromReducer,
     modals: modalsReducer,
     auth: authReducer,
-    async: asnycReducer
+    async: asnycReducer,
+    toastr: toastrReducer
 })
 
 export default rootReducer;
