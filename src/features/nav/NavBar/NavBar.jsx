@@ -1,18 +1,23 @@
 import React, { Component } from 'react'
+import {connect} from 'react-redux';
 import { Menu, Container, Button } from 'semantic-ui-react'
 import { NavLink, Link, withRouter } from 'react-router-dom';
 import SignedOutMenu from '../Menus/SignedOutMenu';
 import SignedInMenu from '../Menus/SignedInMenu';
+import { openModal } from '../../modals/modalActions';
+import { logout } from '../../auth/authActions';
+
+
+
+
 
 class NavBar extends Component {
 
-    state = {
-        isAuth: false
-    }
 
-    handleSignIn = () => this.setState({ isAuth: true });
+    handleSignIn = () => {this.props.openModal('LoginModal')};
+    handleRegister = () => {this.props.openModal('RegisterModal')};
     handleSignOut = () => {
-        this.setState({ isAuth: false })
+        this.props.logout();
         this.props.history.push('/');
     };
 
@@ -26,14 +31,14 @@ class NavBar extends Component {
                         Re-vents
                     </Menu.Item>
                     <Menu.Item as={NavLink} to='/events' name="Events" />
-                    {this.state.isAuth &&
+                    {this.props.auth.isAuth &&
                         <Menu.Item as={NavLink} to='/people' name="People" />}
-                    {this.state.isAuth &&
+                    {this.props.auth.isAuth &&
                         <Menu.Item>
                             <Button as={Link} to='/createEvent' floated="right" positive inverted content="Create Event" />
                         </Menu.Item>}
-                    {this.state.isAuth && <SignedInMenu signOut={this.handleSignOut} />}
-                    {!this.state.isAuth && <SignedOutMenu signIn={this.handleSignIn} />}
+                    {this.props.auth.isAuth && <SignedInMenu signOut={this.handleSignOut} currentUser = {this.props.auth.currentUser} />}
+                    {!this.props.auth.isAuth && <SignedOutMenu signIn={this.handleSignIn} register={this.handleRegister} />}
                     <Menu.Item as={NavLink} to='/test' name="Test area" />
                 </Container>
             </Menu>
@@ -41,4 +46,12 @@ class NavBar extends Component {
     }
 }
 
-export default withRouter(NavBar)
+const actions = {
+    openModal, 
+    logout
+}
+
+const mapStateToProps = (state) =>{
+    return {auth: state.auth}
+}
+export default withRouter( connect(mapStateToProps, actions)(NavBar))

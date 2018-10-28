@@ -1,13 +1,12 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
-import GoogleMapReact from 'google-map-react';
 import Script from 'react-load-script';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
-import { Icon } from 'semantic-ui-react';
+import { Button } from 'semantic-ui-react';
+import { openModal } from '../modals/modalActions';
 
 
 
-const Marker = () => <Icon name='marker' size='big' color='red'/>
 
 class TestComponent extends Component {
 
@@ -60,20 +59,9 @@ class TestComponent extends Component {
           <button type="submit">Submit</button>
         </form>
         <br></br>
-        <div style={{ height: '300px', width: '100%' }}>
-        
-        <GoogleMapReact
-          bootstrapURLKeys={{ key: 'AIzaSyA3cNoTEIEkKWfEMMfQhCH0pHKUO-fUv4w' }}
-          defaultCenter={this.props.center}
-          defaultZoom={this.props.zoom}
-        >
-          <Marker
-            lat={59.955413}
-            lng={30.337844}
-            text={'Kreyser Avrora'}
-          />
-        </GoogleMapReact>
-      </div>
+      
+      <Button primary onClick={() => this.props.openModal('TestModal', null)}>Open test modal</Button>
+
       </div>
     )
   }
@@ -81,7 +69,11 @@ class TestComponent extends Component {
 const mapStateToProps = (state) => ({
   data: state.test.data
 })
-export default connect(mapStateToProps)(TestComponent)
+
+const actions={
+  openModal
+}
+export default connect(mapStateToProps, actions)(TestComponent)
 
 
 
