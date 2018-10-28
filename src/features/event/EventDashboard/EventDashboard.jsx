@@ -3,6 +3,7 @@ import { Grid } from 'semantic-ui-react'
 import EventList from '../EventList/EventList';
 import { connect } from 'react-redux';
 import {deleteEvent, updateEvent, createEvent} from '../eventActions';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 
 
 
@@ -16,6 +17,7 @@ class EventDashboard extends Component {
     }
 
     render() {
+        if( this.props.async.loading) return <LoadingComponent inverted="true" />
         return (
             <Grid>
                 <Grid.Column width={10}>
@@ -29,7 +31,8 @@ class EventDashboard extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    events: state.events
+    events: state.events,
+    async: state.async
 })
 
 const actions = {

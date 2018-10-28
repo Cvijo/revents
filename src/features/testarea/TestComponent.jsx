@@ -1,12 +1,29 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import { Button, Icon } from 'semantic-ui-react';
 import { connect } from 'react-redux';
-import Script from 'react-load-script';
-import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
-import { Button } from 'semantic-ui-react';
-import { openModal } from '../modals/modalActions';
+// import Script from 'react-load-script';
+// import GoogleMapReact from 'google-map-react';
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng
+} from 'react-places-autocomplete';
+import { incrementCounter, decrementCounter, incrementAsync, decrementAsync } from './testActions';
+import { openModal } from '../modals/modalActions'
 
+const mapState = state => ({
+  data: state.test.data,
+  loading: state.test.loading
+});
 
+const actions = {
+  incrementCounter,
+  decrementCounter,
+  decrementAsync,
+  incrementAsync,
+  openModal
+};
 
+// const Marker = () => <Icon name='marker' size='big' color='red'/>
 
 class TestComponent extends Component {
 
@@ -19,64 +36,68 @@ class TestComponent extends Component {
   };
 
   state = {
-    address: '', 
+    address: '',
     scriptLoaded: false
-  }
-  handleScriptLoad = () =>{
-    this.setState({scriptLoaded:true});
-  }
-  handleFormSubmit = (event) => {
-    event.preventDefault()
+  };
+
+  handleScriptLoad = () => {
+    this.setState({ scriptLoaded: true });
+  };
+
+  handleFormSubmit = event => {
+    event.preventDefault();
 
     geocodeByAddress(this.state.address)
       .then(results => getLatLng(results[0]))
       .then(latLng => console.log('Success', latLng))
-      .catch(error => console.error('Error', error))
-  }
+      .catch(error => console.error('Error', error));
+  };
 
-  onChange = (address) => {
-    this.setState({ address: address })
-  }
+  onChange = address => this.setState({ address });
+
   render() {
     const inputProps = {
       value: this.state.address,
-      onChange: this.onChange,
-    }
-
- 
-
+      onChange: this.onChange
+    };
+    const { incrementAsync, decrementAsync, data, openModal, loading } = this.props;
     return (
       <div>
-        <Script
-          url='https://maps.googleapis.com/maps/api/js?key=AIzaSyA3cNoTEIEkKWfEMMfQhCH0pHKUO-fUv4w&libraries=places'
+        {/* <Script
+          url="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTN8X_q_xtMYCnacteF4ZQj0RKXodI080&libraries=places"
           onLoad={this.handleScriptLoad}
-        />
-        The answer is:{this.props.data}
-        <br>
-        </br>
+        /> */}
+        <h1>Test Area</h1>
+        <h3>The answer is: {data}</h3>
+        <Button loading={loading} onClick={incrementAsync} color="green" content="Increment" />
+        <Button loading={loading} onClick={decrementAsync} color="red" content="Decrement" />
+        <Button onClick={() => openModal('TestModal', {data: 42})} color="teal" content="Open Modal" />
+        <br />
+        <br />
         <form onSubmit={this.handleFormSubmit}>
-         {this.state.scriptLoaded && <PlacesAutocomplete inputProps={inputProps} />   } 
+          {this.state.scriptLoaded && (
+            <PlacesAutocomplete inputProps={inputProps} />
+          )}
           <button type="submit">Submit</button>
         </form>
-        <br></br>
-      
-      <Button primary onClick={() => this.props.openModal('TestModal', null)}>Open test modal</Button>
+
+      {/* <div style={{ height: '300px', width: '100%' }}>
+        <GoogleMapReact
+          bootstrapURLKeys={{ key: 'AIzaSyCTN8X_q_xtMYCnacteF4ZQj0RKXodI080' }}
+          defaultCenter={this.props.center}
+          defaultZoom={this.props.zoom}
+        >
+          <Marker
+            lat={59.955413}
+            lng={30.337844}
+            text={'Kreyser Avrora'}
+          />
+        </GoogleMapReact>
+      </div> */}
 
       </div>
-    )
+    );
   }
 }
-const mapStateToProps = (state) => ({
-  data: state.test.data
-})
 
-const actions={
-  openModal
-}
-export default connect(mapStateToProps, actions)(TestComponent)
-
-
-
-
-
-
+export default connect(mapState, actions)(TestComponent);
