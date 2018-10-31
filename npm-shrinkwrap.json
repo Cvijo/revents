@@ -113,7 +113,7 @@
       "dependencies": {
         "core-js": {
           "version": "2.5.5",
-          "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.5.5.tgz",
+          "resolved": "http://registry.npmjs.org/core-js/-/core-js-2.5.5.tgz",
           "integrity": "sha1-sU3ek2xkDAV5prUMq8wTLdYSfjs="
         }
       }
@@ -9671,13 +9671,13 @@
       }
     },
     "react-redux-firebase": {
-      "version": "2.1.8",
-      "resolved": "https://registry.npmjs.org/react-redux-firebase/-/react-redux-firebase-2.1.8.tgz",
-      "integrity": "sha512-SClXFOGfDtg3F2AdMp0SXzj9N+C5nkfQBY5f6wuGit7xTkgGgDXsoL162yRx+CuC2wlQfLUCNQMTS0TGhKXFSw==",
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/react-redux-firebase/-/react-redux-firebase-2.1.0.tgz",
+      "integrity": "sha512-RIWDEcVTJiFEFbKQZn8ooeR64KDve30weANBhcr1vRak9RNLY6YfN4EO2Gnr1pfRJRKwlh5JW2M9Fyuoe+edUg==",
       "requires": {
         "hoist-non-react-statics": "^2.3.1",
-        "lodash": "^4.17.10",
-        "prop-types": "^15.6.1"
+        "lodash": "^4.17.4",
+        "prop-types": "^15.6.0"
       }
     },
     "react-redux-toastr": {

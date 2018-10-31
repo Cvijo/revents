@@ -27,7 +27,6 @@ export const deleteEvent = (state, payload) => {
 
 
 export const fetchEvents = (state, payload) => {
-    console.log(payload);
     return  payload.events;
 }
 

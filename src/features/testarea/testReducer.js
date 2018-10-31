@@ -8,7 +8,6 @@ const initialState = {
 };
 
 export const incrementCounter = (state, payload) => {
-  console.log(state);
   return { ...state, data: state.data + 1 };
 }
 
