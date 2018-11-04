@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Segment, Grid, Icon, Button } from 'semantic-ui-react';
 import EventDetailedMap from './EventDetailedMap';
+import moment from 'moment';
 
 
 class EventDetailedInfo extends Component {
@@ -13,10 +14,15 @@ class EventDetailedInfo extends Component {
       showMap: !prevState.showMap
     }))
   }
-  event = this.props.event;
+
   
 
   render() {
+    const event = this.props.event;
+    let eventDate;
+    if( event.date) {
+      eventDate = event.date.toDate();
+    }
     return (
       <Segment.Group>
         <Segment attached="top">
@@ -25,7 +31,7 @@ class EventDetailedInfo extends Component {
               <Icon size="large" color="teal" name="info" />
             </Grid.Column>
             <Grid.Column width={15}>
-              <p>{this.event.description}</p>
+              <p>{event.description}</p>
             </Grid.Column>
           </Grid>
         </Segment>
@@ -35,7 +41,7 @@ class EventDetailedInfo extends Component {
               <Icon name="calendar" size="large" color="teal" />
             </Grid.Column>
             <Grid.Column width={15}>
-              <span>{this.event.date}</span>
+              <span>{moment(eventDate).format('DD.MM.YYYY HH:mm')}</span>
             </Grid.Column>
           </Grid>
         </Segment>
@@ -45,7 +51,7 @@ class EventDetailedInfo extends Component {
               <Icon name="marker" size="large" color="teal" />
             </Grid.Column>
             <Grid.Column width={11}>
-              <span>{this.event.venue}</span>
+              <span>{event.venue}</span>
             </Grid.Column>
             <Grid.Column width={4}>
               <Button onClick={this.showMapToggle} color="teal" size="tiny" content={this.state.showMap ? "Hide Map" : "Show Map"} />
@@ -53,7 +59,7 @@ class EventDetailedInfo extends Component {
           </Grid>
         </Segment>
         {this.state.showMap &&
-          <EventDetailedMap lat={this.event.venueLatLng.lat} lng={this.event.venueLatLng.lng} />
+          <EventDetailedMap lat={event.venueLatLng.lat} lng={event.venueLatLng.lng} />
         }
       </Segment.Group>
     )
