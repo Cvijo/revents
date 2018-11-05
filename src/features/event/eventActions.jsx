@@ -1,6 +1,5 @@
 import { toastr } from 'react-redux-toastr';
-import { DELETE_EVENT, FETCH_EVENTS } from './eventConstants';
-import { fetchSampleData } from '../../app/data/mockApi';
+import { FETCH_EVENTS } from './eventConstants';
 import { asyncActionStart, asyncActionFinish, asyncActionError } from '../async/asyncActions';
 import { createNewEvent } from '../../app/common/util/helpers';
 import moment from 'moment';
@@ -84,7 +83,7 @@ export const getEventsForDashboard = (lastEvent) => {
             let startAfter = lastEvent && await firestore.collection('events').doc(lastEvent.id).get();
             lastEvent ? query = eventsRef.startAfter(startAfter) : query = eventsRef
             let querySnap = await query.get();
-            if( querySnap.docs.length === 0) {
+            if (querySnap.docs.length === 0) {
                 dispatch(asyncActionFinish());
                 return querySnap;
             }
@@ -99,6 +98,29 @@ export const getEventsForDashboard = (lastEvent) => {
         } catch (error) {
             console.log(error);
             dispatch(asyncActionError());
+        }
+    }
+}
+
+export const addEventComment = (eventId, values, parentId) => {
+    return async (dispatch, getState, { getFirebase }) => {
+        const firebase = getFirebase();
+        const profile = getState().firebase.profile;
+        const user = firebase.auth().currentUser;
+        const newComment = {
+            parentId: parentId,
+            displayName: profile.displayName, 
+            photoURL: profile.photoURL || '/assets/user.png',
+            uid: user.uid, 
+            text: values.comment, 
+            date: Date.now()            
+        }
+        try {
+            
+            await firebase.push('event_chat/'+ eventId, newComment)
+        } catch (error) {
+            console.log(error);
+            toastr.error('Ooops', error.message);
         }
     }
 }

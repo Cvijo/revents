@@ -1,5 +1,5 @@
 import React from 'react'
-import { Grid, Header, Image, Segment, Card, Menu, Tab } from 'semantic-ui-react';
+import { Grid, Header, Image, Segment, Card, Tab } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 
