@@ -13,7 +13,7 @@ function UserDetailedPhoto(props) {
                 <Image.Group size='small'>
                     {props.photos.map(photo => {
                         return (
-                            <LazyLoad key={photo.key} height={150} placeholder={<Image src='/assets/user.png'></Image>}>
+                            <LazyLoad key={photo.id} height={150} placeholder={<Image src='/assets/user.png'></Image>}>
                                 <Image src={photo.url}></Image>
                             </LazyLoad>
                         )

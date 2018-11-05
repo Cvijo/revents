@@ -9,10 +9,20 @@ import UserDetailedEvent from './UserDetailedEvent';
 import { Grid } from 'semantic-ui-react';
 import { userDetailedQuery } from '../userQueries';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
+import { getUserEvents } from '../userActions';
+
 
 
 class UserDetailedPage extends Component {
 
+    async componentDidMount() {
+       await this.props.getUserEvents(this.props.userUid);
+
+    }
+
+    changeTab = (e, data) => {
+        this.props.getUserEvents(this.props.userUid, data.activeIndex);
+    }
 
     render() {
 
@@ -26,7 +36,7 @@ class UserDetailedPage extends Component {
                     <UserDetailedHeader profile={this.props.profile}></UserDetailedHeader>
                     <UserDetailedAbout profile={this.props.profile}></UserDetailedAbout>
                     <UserDetailedPhoto photos={this.props.photos}></UserDetailedPhoto>
-                    <UserDetailedEvent></UserDetailedEvent>
+                    <UserDetailedEvent events={this.props.events} eventsLoading = {this.props.eventsLoading} changeTab={this.changeTab}></UserDetailedEvent>
                 </Grid>
 
             </div>
@@ -49,16 +59,20 @@ const mapStateToProps = (state, ownProps) => {
         userUid,
         auth: state.firebase.auth,
         profile,
+        eventsLoading: state.async.loading,
+        events: state.events,
         photos: state.firestore.ordered.photos,
         requesting: state.firestore.status.requesting
     }
 }
 
-
+const actions =  {
+    getUserEvents
+}
 
 
 export default compose(
-    connect(mapStateToProps, null),
+    connect(mapStateToProps, actions),
     firestoreConnect((auth, userUid) => userDetailedQuery(auth, userUid))
 )(UserDetailedPage);
 

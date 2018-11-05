@@ -1,7 +1,10 @@
 import moment from 'moment';
 import { toastr } from 'react-redux-toastr';
 import cuid from 'cuid';
-import { asyncActionStart, asyncActionFinish } from '../async/asyncActions';
+import { asyncActionStart, asyncActionFinish, asyncActionError } from '../async/asyncActions';
+import firebase from '../../app/config/firebase';
+import { FETCH_EVENTS } from '../event/eventConstants';
+
 
 
 
@@ -63,7 +66,7 @@ export const uploadProfileImage = (file, fileName) => {
                     name: imageName,
                     url: downloadUrl
                 })
-                dispatch(asyncActionFinish());
+            dispatch(asyncActionFinish());
         } catch (error) {
             console.log(error);
             dispatch(asyncActionFinish());
@@ -113,10 +116,10 @@ export const goingToEvent = (event) => {
         const user = firestore.auth().currentUser;
         const photoURL = getState().firebase.profile.photoURL
         const attendee = {
-            going: true, 
-            photoURL: photoURL || '/assets/user.png', 
-            displayName: user.displayName, 
-            host:false, 
+            going: true,
+            photoURL: photoURL || '/assets/user.png',
+            displayName: user.displayName,
+            host: false,
             joinDate: Date.now()
         }
         try {
@@ -125,9 +128,9 @@ export const goingToEvent = (event) => {
             })
             await firestore.set('event_attendee/' + event.id + '_' + user.uid, {
                 eventId: event.id,
-                userUid: user.uid, 
-                eventDate: event.date, 
-                host:false
+                userUid: user.uid,
+                eventDate: event.date,
+                host: false
             });
             toastr.success('Success', 'You have signed up to the event');
 
@@ -152,6 +155,58 @@ export const cancelGoingToEvent = (event) => {
         } catch (error) {
             console.log(error);
             throw new Error('Problem cancelling going to event.')
+        }
+    }
+}
+
+export const getUserEvents = (userUid, activeTab) => {
+    return async (dispatch, getSate) => {
+        dispatch(asyncActionStart());
+        const firestore = firebase.firestore();
+        const today = new Date(Date.now());
+        let eventsRef = firestore.collection('event_attendee');
+        let query;
+        switch (activeTab) {
+            case 1: //past events
+                query = eventsRef
+                    .where('userUid', '==', userUid)
+                    .where('eventDate', '<=', today)
+                    .orderBy('eventDate', 'desc');
+                break;
+            case 2: //future events
+                query = eventsRef
+                    .where('userUid', '==', userUid)
+                    .where('eventDate', '>=', today)
+                    .orderBy('eventDate');
+                break;
+            case 3: //hosted events
+                query = eventsRef
+                    .where('userUid', '==', userUid)
+                    .where('host', '==', true)
+                    .orderBy('eventDate', 'desc');
+                break;
+            default: //all my events
+                query = eventsRef
+                    .where('userUid', '==', userUid)
+                    .orderBy('eventDate', 'desc');
+                break;
+        }
+
+        try {
+            let querySnap = await query.get();
+            let events = [];
+
+            for (let i = 0; i < querySnap.docs.length; i++) {
+                let evt = await firestore.collection('events').doc(querySnap.docs[i].data().eventId).get();
+                //let evt2 = await firestore.collection('events').where('id', '==', querySnap.docs[i].data().eventId).get();
+                events.push({...evt.data(), id: evt.id});
+            }
+            dispatch({type:FETCH_EVENTS, payload: {events}})
+            dispatch(asyncActionFinish());
+        } catch (error) {
+            console.log(error);
+            dispatch(asyncActionError());
+            throw new Error(error.message);
         }
     }
 }
