@@ -14,7 +14,6 @@ const panes = [
 
 function UserDetailedEvent({ events, eventsLoading, changeTab }) {
 
-    console.log(events);
     return (
         <Grid.Column width={12}>
             <Segment attached loading={eventsLoading}>
